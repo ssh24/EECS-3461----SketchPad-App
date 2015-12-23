@@ -8,20 +8,30 @@ import java.awt.event.MouseEvent;
 import controller.primary.MainControl;
 import controller.secondary.drawings.*;
 
-public class DrawPolygonListener extends MouseAdapter {
+/********The DrawPolygonListener class********/
+public class DrawPolygonListener extends MouseAdapter 
+{
+	 /********private variables *********/
 	private PathDrawing path;
 	private double startx;
 	private double starty;
 	private Component comp;
 	private ShapeDrawing.Style shapeStyle;
+	
 
-	public DrawPolygonListener(Component comp) {
+	 /********public constructor *********/
+	public DrawPolygonListener(Component comp) 
+	{
 		this.comp = comp;
 	}
 
+	
+	 // implements MouseAdapter methods
 	@Override
-	public void mousePressed(MouseEvent e) {
-		if (path == null) {
+	public void mousePressed(MouseEvent e) 
+	{
+		if (path == null) 
+		{
 			MainControl.preview = null;
 			startx = e.getX() / MainControl.zoom;
 			starty = e.getY() / MainControl.zoom;
@@ -31,7 +41,9 @@ public class DrawPolygonListener extends MouseAdapter {
 			shapeStyle.setLineColor(MainControl.line);
 			shapeStyle.setStroke(new BasicStroke(MainControl.stroke));
 			path.setStyle(shapeStyle);
-		} else {
+		} 
+		else 
+		{
 			path.lineTo(e.getX() / MainControl.zoom, e.getY() / MainControl.zoom);
 		}
 		MainControl.preview = path;
@@ -39,8 +51,10 @@ public class DrawPolygonListener extends MouseAdapter {
 	}
 
 	@Override
-	public void mouseDragged(MouseEvent e) {
-		if (MainControl.preview == null) {
+	public void mouseDragged(MouseEvent e) 
+	{
+		if (MainControl.preview == null) 
+		{
 			return;
 		}
 		PathDrawing p2 = new PathDrawing(path);
@@ -51,13 +65,15 @@ public class DrawPolygonListener extends MouseAdapter {
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent e) {
-		if (MainControl.preview == null) {
+	public void mouseReleased(MouseEvent e) 
+	{
+		if (MainControl.preview == null) 
+		{
 			return;
 		}
 		path = (PathDrawing) MainControl.preview;
-		if (Math.abs(startx - e.getX() * MainControl.zoom) < 5
-				&& Math.abs(starty - e.getY() * MainControl.zoom) < 5) {
+		if (Math.abs(startx - e.getX() * MainControl.zoom) < 5 && Math.abs(starty - e.getY() * MainControl.zoom) < 5) 
+		{
 			shapeStyle.setFillColor(MainControl.fill);
 			path.closePath();
 			path.setStyle(shapeStyle);
@@ -67,5 +83,4 @@ public class DrawPolygonListener extends MouseAdapter {
 		}
 		comp.repaint();
 	}
-
-} // DrawPolygonListener
+} 

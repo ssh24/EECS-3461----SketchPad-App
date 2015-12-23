@@ -7,15 +7,19 @@ import java.awt.event.MouseEvent;
 import controller.primary.MainControl;
 
 
-public class DrawingListener extends MouseAdapter {
-
+public class DrawingListener extends MouseAdapter 
+{
+	 /********private variables *********/
     private DrawShapeListener dsl;
     private SelectionListener sel;
     private DrawPolygonListener dpl;
     private ImageListener imgl;
     private TextListener tl;
     
-    public DrawingListener(Component comp) {
+    
+    /********public constructor *********/
+    public DrawingListener(Component comp)
+    {
         this.dsl = new DrawShapeListener(comp);
         this.sel = new SelectionListener(comp);
         this.dpl = new DrawPolygonListener(comp);
@@ -23,15 +27,17 @@ public class DrawingListener extends MouseAdapter {
         tl = new TextListener(comp);
     }
     
+    // implements MouseAdapter methods
     @Override
-    public void mouseClicked(MouseEvent e) {
+    public void mouseClicked(MouseEvent e)
+    {
     	
-        switch (MainControl.mode) {
+        switch (MainControl.mode)
+        {
             case FREEHAND:
             case LINE:
             case OVAL:
             case RECTANGLE:
-            case ROUNDRECT:
                 dsl.mouseClicked(e);
                 break;
             case POLYGON:
@@ -49,17 +55,17 @@ public class DrawingListener extends MouseAdapter {
                 break;
             default:
                 break;
-        } // switch
+        }
     }
 
     @Override
-    public void mousePressed(MouseEvent e) {
+    public void mousePressed(MouseEvent e) 
+    {
         switch (MainControl.mode) {
             case FREEHAND:
             case LINE:
             case OVAL:
             case RECTANGLE:
-            case ROUNDRECT:
                 dsl.mousePressed(e);
                 break;
             case POLYGON:
@@ -78,17 +84,17 @@ public class DrawingListener extends MouseAdapter {
                 break;
             default:
                 break;
-        } // switch
+        } 
     }
     
     @Override
-    public void mouseDragged(MouseEvent e) {
+    public void mouseDragged(MouseEvent e) 
+    {
         switch (MainControl.mode) {
             case FREEHAND:
             case LINE:
             case OVAL:
             case RECTANGLE:
-            case ROUNDRECT:
                 dsl.mouseDragged(e);
                 break;
             case POLYGON:
@@ -106,17 +112,18 @@ public class DrawingListener extends MouseAdapter {
                 break;
             default:
                 break;
-        } // switch
+        } 
     }
 
     @Override
-    public void mouseReleased(MouseEvent e) {
+    public void mouseReleased(MouseEvent e) 
+    {
         switch (MainControl.mode) {
+        
             case FREEHAND:
             case LINE:
             case OVAL:
             case RECTANGLE:
-            case ROUNDRECT:
                 dsl.mouseReleased(e);
                 break;
             case POLYGON:
@@ -135,7 +142,6 @@ public class DrawingListener extends MouseAdapter {
                 break;
             default:
                 break;
-        } // switch
+        } 
     }
-
-} // DrawingListener
+}

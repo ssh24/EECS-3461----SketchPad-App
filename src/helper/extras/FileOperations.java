@@ -1,34 +1,33 @@
 package helper.extras;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import view.basics.panes.*;
+import view.basics.toolbars.StrokeToolbar;
+import view.basics.toolbars.ToolBar;
+import view.basics.*;
 import controller.primary.MainControl;
 import controller.secondary.drawings.Drawing;
 import controller.secondary.drawings.ImageDrawing;
 
-public class FileOperations {
-
-	private static JFrame my_frame;
-
-	public FileOperations(JFrame frame)
-	{
-		my_frame = frame;
-	}
-    public int newDrawing()
+/********The FileOperations class *******/
+public class FileOperations 
+{	
+	/********public method to create a new drawing *********/
+    public static int newDrawing()
     {
         if (saveDrawing(true, false) == JOptionPane.CANCEL_OPTION)
         {
-        	System.out.println("First if");
             return JOptionPane.CANCEL_OPTION;
         }
         MainControl.file = null;
@@ -38,24 +37,35 @@ public class FileOperations {
             MainControl.preview = null;
             MainControl.selected = null;
             MainControl.drawingArea.repaint();
-        	my_frame.dispose();
-        	new MainFrame("Untitled");
-/*            MainControl.drawings.clear();
-            MainControl.preview = null;
-            MainControl.selected = null;
-            MainControl.drawingArea.repaint();*/
+            MainControl.mode = MainControl.Mode.SELECT;
+            
+            ToolBar.undo.setEnabled(false);
+            ToolBar.redo.setEnabled(false);
+            ToolBar.change_pencil_image(new ImageIcon("images/main-tool-bar-images/pencil.png"));
+            ToolBar.change_shapes_image(new ImageIcon("images/main-tool-bar-images/shapes.png"));
+            MainControl.drawingArea.setBackground(Color.WHITE);
+            MainControl.stroke = 1;
+            StrokeToolbar.resetSlider();
+            MainControl.line = Color.BLACK;
+            MainControl.fill = Color.WHITE;
+            
+            MainFrame.getFrames()[0].setTitle("Untitled" + MainFrame.company);
+            
         }
         return JOptionPane.YES_OPTION;
     }
 
-    public  int openDrawing() {
+    /********public method to open a drawing file *********/
+    public static  int openDrawing() 
+    {
         if (newDrawing() == JOptionPane.CANCEL_OPTION) 
         {
             return JOptionPane.CANCEL_OPTION;
         }
         ImageFileChooser imgChooser = new ImageFileChooser();
         int returnVal = imgChooser.showOpenDialog(null);
-        if (returnVal == ImageFileChooser.APPROVE_OPTION) {
+        if (returnVal == ImageFileChooser.APPROVE_OPTION) 
+        {
             MainControl.drawings.add(new ImageDrawing(imgChooser.getSelectedFileWithExtension(), 0, 0));
             MainControl.file = imgChooser.getSelectedFileWithExtension();
             String[] parts = MainControl.file.getName().split("[.]");
@@ -64,35 +74,44 @@ public class FileOperations {
             MainControl.preview = null;
             MainControl.selected = null;
             MainControl.drawingArea.repaint();
-        	my_frame.dispose();
-        	new MainFrame(MainControl.file.getName());
+            MainFrame.getFrames()[0].setTitle(MainControl.file.getName() + MainFrame.company);
             return JOptionPane.YES_OPTION;
         }
         return JOptionPane.CANCEL_OPTION;
     }
     
-    private static int saveDrawing(File saveFile, String ext) {
+    /********private method to save the drawing *********/
+    private static int saveDrawing(File saveFile, String ext) 
+    {
         JPanel drawPanel = MainControl.drawingArea;
         BufferedImage image = new BufferedImage(drawPanel.getWidth(), drawPanel.getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics2D = image.createGraphics(); 
-        boolean showGrid = MainControl.isGrid;
-        Drawing selected = MainControl.selected;
-        MainControl.isGrid = false;
-        MainControl.selected = null;
         drawPanel.paint(graphics2D);
-        MainControl.isGrid = showGrid;
+   
+        Drawing selected = MainControl.selected;
+        MainControl.selected = null;
         MainControl.selected = selected;
-        try {
+        try 
+        {
             ImageIO.write(image, ext, saveFile);
-        } catch(Exception ex){
+        } 
+        catch(Exception ex)
+        {
             ex.printStackTrace();
             return JOptionPane.NO_OPTION;
         }
-    	my_frame.dispose();
-    	new MainFrame(MainControl.file.getName());
+        if(MainControl.file == null)
+        {
+        	
+        }
+        else 
+        {
+        	 MainFrame.getFrames()[0].setTitle(MainControl.file.getName() + MainFrame.company);
+        }
         return JOptionPane.YES_OPTION;
     }
 
+    /********public method to save the drawing *********/
     public static int saveDrawing(boolean confirm, boolean saveAs)
     {
         if (MainControl.drawings.isEmpty()) 
@@ -123,12 +142,20 @@ public class FileOperations {
                 MainControl.ext = ((FileNameExtensionFilter)imgChooser.getFileFilter()).getExtensions()[0];
                 return saveDrawing(MainControl.file, MainControl.ext);
             }
-        } else {
+        } 
+        else 
+        {
             return saveDrawing(MainControl.file, MainControl.ext);
         }
-    	my_frame.dispose();
-    	new MainFrame(MainControl.file.getName());
+        if(MainControl.file == null)
+        {
+        	
+        }
+        else 
+        {
+        	 MainFrame.getFrames()[0].setTitle(MainControl.file.getName() + MainFrame.company);
+        }
+       
         return JOptionPane.CANCEL_OPTION;
     }
-
 }

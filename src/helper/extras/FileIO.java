@@ -2,80 +2,88 @@ package helper.extras;
 
 import java.io.*;
 
-/**
- * General utility methods useful
- * for working with byte arrays
- */
-public class FileIO {
+/********The FileIO class *******/
+public class FileIO 
+{
 
     private static FileIO self = new FileIO();
 
-    private FileIO() { } // Utility class
+    /********private constructor *********/
+    private FileIO() 
+    { 
+    	
+    } 
 
-    /**
-     * Read the given file into an array of bytes
-     *
-     * @param   filename    path of the file to read
-     * @return              array consisting of the file's content
-     */
-    public static byte[] fileToBytes(String filename) throws Exception {
+  
+    /********public method that reads the given file into an array of bytes *********/
+    public static byte[] fileToBytes(String filename) throws Exception
+    {
         FileInputStream       in  = new FileInputStream(filename);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        for (;;) {
+        for (;;) 
+        {
             int c = in.read();
-            if (c == -1) {break;}
+            if (c == -1) 
+            {
+            	break;
+            }
             out.write(c);
         }
         in.close();
         return out.toByteArray();
     }
 
-    /**
-     * Create a file with the given name and
-     * write the given array of bytes to it
-     *
-     * @param   data        the data to write
-     * @param   filename    path of the file to write to
-     */
-    public static void bytesToFile(byte[] data, String filename) throws Exception {
+
+    /********public method that create a file with the given name and write the given array of bytes *********/
+    public static void bytesToFile(byte[] data, String filename) throws Exception 
+    {
         FileOutputStream out = new FileOutputStream(filename);
         out.write(data);
         out.close();
     }
 
-    /**
-     * Reads HTML document at the given address and
-     * returns its content as a string.
-     *
-     * @param address   of the HTML document to read
-     * @return          the content of the HTML document
-     */
-    public static String getHTML(String address) {
+    
+    /********public method that reads HTML document at the given address *********/
+    public static String getHTML(String address) 
+    {
         InputStream fis = null;
         BufferedReader reader = null;
         String html = "";
-        try {
+        try 
+        {
             fis = self.getClass().getResourceAsStream(address);
             reader = new BufferedReader(new InputStreamReader(fis));
             String line;
-            for (;;) {
+            for (;;) 
+            {
                 line = reader.readLine();
-                if (line == null) {break;}
+                if (line == null) 
+                {
+                	break;
+                }
                 html += line;
             }
-        } catch (FileNotFoundException e) {
+        }
+        catch (FileNotFoundException e) 
+        {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        } catch (IOException e) {
+        } 
+        catch (IOException e) 
+        {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        } finally {
-            try {
+        } 
+        finally 
+        {
+            try 
+            {
                 reader.close();
                 fis.close();
-            } catch (IOException e) {
+            } 
+            catch (IOException e) 
+            {
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
         }
         return html;
     }
-
-} // FileIO
+} 

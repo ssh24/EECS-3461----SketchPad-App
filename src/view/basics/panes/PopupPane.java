@@ -7,17 +7,13 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 
-/**
- * The class implements a popup panel,
- * a popup containing a single component.
- * This is a customized popup. Not using the
- * standard JMenu and JMenuItem.
- */
-public class PopupPane
-    extends JPopupMenu
-    implements PopupMenuListener, ActionListener {
 
-    public static final int TOP     = -1;
+/********The PopupPane class *******/
+public class PopupPane extends JPopupMenu implements PopupMenuListener, ActionListener 
+{
+	/********Variables *******/
+	private static final long serialVersionUID = 1L;
+	public static final int TOP     = -1;
     public static final int BOTTOM  = 1;
     public static final int LEFT    = 1;
     public static final int CENTER  = 2;
@@ -39,12 +35,10 @@ public class PopupPane
     private boolean        deselectOnClose = false;
     private int            orientation     = LEFT;
 
-    /**
-     * Construct a new popup with the given content.
-     *
-     * @param popupPanel        the content pane.
-     */
-    public PopupPane(Component popupPanel) {
+    
+    /********public constructor *******/
+    public PopupPane(Component popupPanel) 
+    {
         this.popupPanel = popupPanel;
         setLayout(new BorderLayout());
         add(popupPanel, BorderLayout.CENTER);
@@ -53,37 +47,32 @@ public class PopupPane
         pack();
     }
 
-    /**
-     * Unset the invoker.
-     */
-    public void unsetInvoker() {
+    
+    /********public method *******/
+    public void unsetInvoker() 
+    {
         if (invoker == null) {return;}
         orientation = LEFT;
         super.setInvoker(null);
-        if (invoker instanceof AbstractButton) {
+        if (invoker instanceof AbstractButton) 
+        {
             AbstractButton b = (AbstractButton)invoker;
             b.removeActionListener(this);
             removePopupMenuListener(this);
             bgroup = null;
             deselectOnClose = false;
-        } else {
+        } 
+        else
+        {
             invoker.removeMouseListener(mouseListener);
         }
         invoker = null;
     }
 
-    /**
-     * Sets the invoker of this popup menu -- the button in which
-     * the popup menu menu is to be displayed. Orientation: Bottom left
-     *
-     * @param invoker           the <code>AbstractButton</code> in which
-     *                          the popup menu is displayed when clicked
-     * @param bgroup            the button group for which invoker belongs
-     * @param deselectOnClose   flag to deselect invoker, when popup closed
-     */
-    public void configInvoker(AbstractButton invoker,
-                           ButtonGroup bgroup,
-                           boolean deselectOnClose) {
+   
+    //********public methods to set the invoker of the popup menu *******//
+    public void configInvoker(AbstractButton invoker, ButtonGroup bgroup, boolean deselectOnClose)
+    {
         unsetInvoker();
         this.invoker         = invoker;
         this.bgroup          = bgroup;
@@ -94,37 +83,21 @@ public class PopupPane
         setVisible(false);
     }
 
-    /**
-     * Sets the invoker of this popup menu -- the button in which
-     * the popup menu menu is to be displayed.
-     *
-     * @param invoker           the <code>AbstractButton</code> in which
-     *                          the popup menu is displayed when clicked
-     * @param bgroup            the button group for which invoker belongs
-     * @param deselectOnClose   flag to deselect invoker, when popup closed
-     * @param orientation       for which the popup will be displayed
-     *                          relative to the invoker
-     */
-    public void configInvoker(AbstractButton invoker,
-                           ButtonGroup bgroup,
-                           boolean deselectOnClose,
-                           int orientation) {
+    public void configInvoker(AbstractButton invoker, ButtonGroup bgroup, boolean deselectOnClose, int orientation)
+    {
         configInvoker(invoker, bgroup, deselectOnClose);
         this.orientation = orientation;
     }
 
-    /**
-     * Sets the invoker of this popup menu -- the component in which
-     * the popup menu menu is to be displayed. Orientation: Bottom left
-     *
-     * @param invoker       the <code>Component</code> in which the popup
-     *                      menu is displayed
-     */
-    public void configInvoker(Component invoker) {
+    public void configInvoker(Component invoker)
+    {
         unsetInvoker();
-        if (invoker instanceof AbstractButton) {
+        if (invoker instanceof AbstractButton) 
+        {
             configInvoker((AbstractButton)invoker, null, false);
-        } else {
+        } 
+        else 
+        {
             this.invoker = invoker;
             setInvoker(invoker);
             invoker.addMouseListener(mouseListener);
@@ -132,21 +105,15 @@ public class PopupPane
         setVisible(false);
     }
 
-    /**
-     * Sets the invoker of this popup menu -- the component in which
-     * the popup menu menu is to be displayed.
-     *
-     * @param invoker           the <code>Component</code> in which
-     *                          the popup menu is displayed
-     * @param orientation       for which the popup will be displayed
-     *                          relative to the invoker
-     */
-    public void configInvoker(Component invoker, int orientation) {
+    public void configInvoker(Component invoker, int orientation) 
+    {
         configInvoker(invoker);
         this.orientation = orientation;
     }
 
-    @Override public void revalidate() {
+  
+    @Override public void revalidate() 
+    {
         if (popupPanel == null) {return;}
         setVisible(false);
         super.revalidate();
@@ -154,29 +121,52 @@ public class PopupPane
         invokePopup();
     }
 
-    @Override public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {unselect(e);}
-    @Override public void popupMenuCanceled(PopupMenuEvent e) {unselect(e);}
-    @Override public void popupMenuWillBecomeVisible(PopupMenuEvent e) {}
-    private void unselect(PopupMenuEvent e) {
-        if (!deselectOnClose) {return;}
-        if (invoker == null) {return;}
+    // implements PopupMenuListener methods
+    @Override public void popupMenuWillBecomeInvisible(PopupMenuEvent e) 
+    {
+    	unselect(e);
+    }
+    @Override public void popupMenuCanceled(PopupMenuEvent e) 
+    {
+    	unselect(e);
+    }
+    @Override public void popupMenuWillBecomeVisible(PopupMenuEvent e) 
+    {
+    	
+    }
+    
+    /********private method to unselect *******/
+    private void unselect(PopupMenuEvent e) 
+    {
+        if (!deselectOnClose)
+        {
+        	return;
+        }
+        if (invoker == null) 
+        {
+        	return;
+        }
         ((AbstractButton)invoker).setSelected(false);
-        if (bgroup != null) {
+        if (bgroup != null) 
+        {
             bgroup.clearSelection();
         }
-    } // unselect
-
-    @Override public void actionPerformed(ActionEvent e) {
-        if (!deselectOnClose || ((AbstractButton)invoker).isSelected()) {
+    } 
+    // implements ActionListener method
+    @Override public void actionPerformed(ActionEvent e) 
+    {
+        if (!deselectOnClose || ((AbstractButton)invoker).isSelected()) 
+        {
             invokePopup();
         }
     }
 
-    /**
-     * Invoke / Show the popup.
-     */
-    private void invokePopup() {
-        if (invoker == null) {
+    
+    /********private method to show the popup *******/
+    private void invokePopup() 
+    {
+        if (invoker == null) 
+        {
             show(null, 0, 0);
             return;
         }
@@ -185,13 +175,16 @@ public class PopupPane
         int prefWidth = popupPanel.getPreferredSize().width;
         int prefHeight = popupPanel.getPreferredSize().height;
         int x = 0;
-        if (height <= 0) {
+        if (height <= 0)
+        {
             height = prefHeight;
         }
-        if (width <= 0) {
+        if (width <= 0) 
+        {
             width = prefWidth;
         }
-        switch (Math.abs(orientation)) {
+        switch (Math.abs(orientation)) 
+        {
             case CENTER:
                 x = (invoker.getWidth() - width) / 2;
                 break;
@@ -202,16 +195,16 @@ public class PopupPane
         show(invoker, x, orientation < 0 ? -height : invoker.getHeight());
     }
 
-    /**
-     * The mouse handler to attach to non button
-     * invokers.
-     */
-    private class InvokerMouseListener extends MouseAdapter {
-        @Override public void mousePressed(MouseEvent e) {
-            if (!isShowing()) {
+    
+    /********private class *******/
+    private class InvokerMouseListener extends MouseAdapter 
+    {
+        @Override public void mousePressed(MouseEvent e) 
+        {
+            if (!isShowing()) 
+            {
                 invokePopup();
             }
         }
-    } // InvokerMouseListener
-
-} // PopupPanel
+    }
+} 

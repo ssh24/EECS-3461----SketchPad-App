@@ -3,7 +3,6 @@ package view.basics.panes;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
@@ -13,10 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.Random;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
@@ -30,25 +27,25 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
+import controller.primary.MainControl;
 
-public class TextPane extends JFrame implements ActionListener, ItemListener {
-	
+/********The TextPane class creates text to be added to the paint program. *******/
+public class TextPane extends JFrame implements ActionListener, ItemListener 
+{
+	/********Variables *********/
 	static final long serialVersionUID = 42L;
 
-	final int DEFAULT_STYLE = Font.PLAIN;
-	final int DEFAULT_SIZE = 22;
-	final int DEFAULT_SIZE_INDEX = 3;
-	final String[] SZ = { "10", "14", "18", "22", "26", "32", "38", "48" };
+	private final int DEFAULT_STYLE = Font.PLAIN;
+	private final int DEFAULT_SIZE = 22;
+	private final int DEFAULT_SIZE_INDEX = 3;
+	private final String[] SZ = { "10", "14", "18", "22", "26", "32", "38", "48" };
 
 	private JTextField message;
-	private JButton exitButton;
-	private JButton restoreButton;
 	private JCheckBox italicCheckBox;
 	private JCheckBox boldCheckBox;
 	private JComboBox<String> sizeCombo;
@@ -72,45 +69,14 @@ public class TextPane extends JFrame implements ActionListener, ItemListener {
 
 	private JTextField entry;
 
+	private boolean choice_text = false;
+
 	public static Color color;
 	
-	public String getMessage()
-	{
-		return entry.getText();
-	}
 	
-	public Color getcolor()
-	{
-		return c;
-	}
-	
-	public String getfont()
-	{
-		return (String) fontCombo.getSelectedItem();
-	}
-	
-	public int getsize()
-	{
-		return Integer.parseInt((String) sizeCombo.getSelectedItem());
-	}
-	
-	public int getstyle()
-	{
-		if(italicCheckBox.isSelected() && !boldCheckBox.isSelected())
-			return Font.ITALIC;
-		else if(boldCheckBox.isSelected() && !italicCheckBox.isSelected())
-			return Font.BOLD;
-		else if(italicCheckBox.isSelected() && boldCheckBox.isSelected())
-			return Font.ITALIC + Font.BOLD;
-		else
-			return Font.PLAIN;
-	}
-	
+	/********public constructor *********/
 	public TextPane()
 	{
-
-
-		// configurations
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		fontList = ge.getAvailableFontFamilyNames();
 		
@@ -124,7 +90,7 @@ public class TextPane extends JFrame implements ActionListener, ItemListener {
 			}
 		}
 
-		if (defaultFamilyIndex == -1) // not found!
+		if (defaultFamilyIndex == -1) 
 		{
 			JOptionPane.showMessageDialog(this, "Default font family ('serif') not found!\n" + "Will use '"
 					+ fontList[0] + "' as default.", "Information Message", JOptionPane.INFORMATION_MESSAGE);
@@ -135,10 +101,6 @@ public class TextPane extends JFrame implements ActionListener, ItemListener {
 		fontFamily = defaultFamily;
 		fontStyle = DEFAULT_STYLE;
 		fontSize = DEFAULT_SIZE;
-
-		// ----------------------------------
-		// construct and configure components
-		// ----------------------------------
 		
 		panel = new JPanel(new BorderLayout());
 		
@@ -149,14 +111,14 @@ public class TextPane extends JFrame implements ActionListener, ItemListener {
 		north.add(label);
 		
 		entry = new JTextField(30);
+		// add Listener
 		entry.addCaretListener(new CaretListener()
 		{
-
 			@Override
-			public void caretUpdate(CaretEvent e) {
+			public void caretUpdate(CaretEvent e) 
+			{
 				message.setText(entry.getText());
-			}
-			
+			}	
 		});
 
 		
@@ -218,16 +180,12 @@ public class TextPane extends JFrame implements ActionListener, ItemListener {
 		JButton colorButton = new JButton("Choose text color");
 		colorButton.addActionListener(new ActionListener()
 		{
-			
-
-
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) 
+			{
 				c = JColorChooser.showDialog(null, "Text color chooser", Color.BLACK);
 				message.setForeground(c);
 			}
-			
-			
 		});
 		
 		JPanel colorPanel = new JPanel();
@@ -237,22 +195,59 @@ public class TextPane extends JFrame implements ActionListener, ItemListener {
 		
 		JPanel proceedPanel = new JPanel();
 		
-		JButton proceed = new JButton("Proceed ->");
+		JButton proceed = new JButton("Proceed");
 		
 		proceed.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent arg0)
+			{
 				messageText = getMessage();
 				color = getcolor();
 				font = getfont();
 				size = getsize();
 				style = getstyle();
 				setVisible(false);
+				
+				JPanel panel = new JPanel();
+				panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+				JLabel label = new JLabel("<html><font size = 5><b><u>Tip</u>: "
+						+ "Click anywhere on the drawing panel to Add Text.<b></html>");
+
+				JCheckBox box = new JCheckBox("<html><font size = 5><font color = blue>Remember my decision.</html>");
+
+				if (choice_text)
+					;
+				else 
+				{
+					panel.add(label);
+					panel.add(box);
+
+					JOptionPane.showMessageDialog(null, panel, "", JOptionPane.PLAIN_MESSAGE);
+
+					if (box.isSelected())
+						choice_text = true;
+					else
+						choice_text = false;
+				}
+			}
+		});
+		JButton exit = new JButton("Cancel");
+		
+		exit.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				setVisible(false);
+				MainControl.mode = MainControl.Mode.SELECT;
 			}
 			
 		});
+		
 		proceedPanel.add(proceed);
+		proceedPanel.add(exit);
 
 		// arrange panels
 
@@ -271,7 +266,8 @@ public class TextPane extends JFrame implements ActionListener, ItemListener {
 		
 		add(panel);
 		
-		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		setUndecorated(true);
+		setOpacity(1);
 		setTitle("Text Prompt" + MainFrame.company);
 		pack();
 
@@ -283,30 +279,14 @@ public class TextPane extends JFrame implements ActionListener, ItemListener {
 	}
 
 
-	// -------------------------------
-	// implement ActionListener method
-	// -------------------------------
-
+	
+	// implements ActionListener method
 	@Override
 	public void actionPerformed(ActionEvent ae)
 	{
 		Object source = ae.getSource();
 
-		// 'Command' - check if a command button was pressed
-		if (source == restoreButton)
-		{
-			fontFamily = fontList[defaultFamilyIndex];
-			fontStyle = DEFAULT_STYLE;
-			fontSize = DEFAULT_SIZE;
-			sizeCombo.setSelectedIndex(DEFAULT_SIZE_INDEX);
-			italicCheckBox.setSelected(false);
-			boldCheckBox.setSelected(false);
-			fontCombo.setSelectedIndex(defaultFamilyIndex);
-		} else if (source == exitButton)
-			System.exit(0);
-
-		// 'Size' - check if the font size was changed via the combobox
-		else if (source == sizeCombo)
+	if (source == sizeCombo)
 		{
 			int tmp = this.getFontSize(sizeCombo);
 			if (tmp == -1)
@@ -314,54 +294,40 @@ public class TextPane extends JFrame implements ActionListener, ItemListener {
 			else
 				fontSize = tmp;
 		}
-
-		// 'Font' - check if the font family was changed via the combobox
 		else if (source == fontCombo)
 			fontFamily = fontList[fontCombo.getSelectedIndex()];
 
-		// update message font, size, and style
 		message.setFont(new Font(fontFamily, fontStyle, fontSize));
 	}
 
-	// -----------------------------
-	// implement ItemListener method
-	// -----------------------------
-
+	
+	// implements ItemListener method
 	@Override
 	public void itemStateChanged(ItemEvent ie)
 	{
 		Object source = ie.getSource();
 
-		// 'Style' - check if the font style was change via a checkbox
+		
 		if (source == italicCheckBox)
 		{
 			if (italicCheckBox.isSelected())
-				fontStyle = fontStyle | Font.ITALIC; // turn italic on
+				fontStyle = fontStyle | Font.ITALIC; 
 			else
-				fontStyle = fontStyle & ~Font.ITALIC; // turn italic off
-		} else if (source == boldCheckBox)
+				fontStyle = fontStyle & ~Font.ITALIC; 
+		} 
+		else if (source == boldCheckBox)
 		{
 			if (boldCheckBox.isSelected())
-				fontStyle = fontStyle | Font.BOLD; // turn bold on
+				fontStyle = fontStyle | Font.BOLD; 
 			else
-				fontStyle = fontStyle & ~Font.BOLD; // turn bold off
+				fontStyle = fontStyle & ~Font.BOLD; 
 		}
-
-		// update message font, size, and style
+		
 		message.setFont(new Font(fontFamily, fontStyle, fontSize));
 	}
 
-	// -------------
-	// other methods
-	// -------------
-
-	/**
-	 * Get the size of the font from the combo box.
-	 * 
-	 * @param cb
-	 *            the combo box
-	 * @return a int equal to the font size, or -1 if invalid. Note a valid font size is an integer in the range 1-500
-	 */
+	
+	/********private method *********/
 	private int getFontSize(JComboBox<String> cb)
 	{
 		String userInput = (String) cb.getSelectedItem();
@@ -370,7 +336,8 @@ public class TextPane extends JFrame implements ActionListener, ItemListener {
 		try
 		{
 			fntSize = Integer.parseInt(userInput);
-		} catch (NumberFormatException nfe)
+		} 
+		catch (NumberFormatException nfe)
 		{
 			ok = false;
 		}
@@ -378,7 +345,7 @@ public class TextPane extends JFrame implements ActionListener, ItemListener {
 		if (fntSize < 1 || fntSize > 500)
 		{
 			ok = false;
-			fntSize = -1; // indicates invalid
+			fntSize = -1; 
 			cb.setSelectedItem("" + fontSize);
 		}
 
@@ -388,21 +355,18 @@ public class TextPane extends JFrame implements ActionListener, ItemListener {
 			JOptionPane.showMessageDialog(this, "Please enter an integer in the range 1-500!", "Invalid Input",
 					JOptionPane.ERROR_MESSAGE);
 
-			// keep focus on combobox editor until input is corrected
 			cb.setSelectedItem("" + fontSize);
 		}
-		return fntSize; // returns -1 if invalid
+		return fntSize; 
 	}
 
-	// -----------
+	
 	// inner class
-	// -----------
-
 	class CustomRenderer extends JTextField implements ListCellRenderer
 	{
-		// the following avoids a "warning" with Java 1.5.0 complier (?)
 		static final long serialVersionUID = 42L;
 
+		/********public constructor *********/
 		public CustomRenderer()
 		{
 			this.setOpaque(true);
@@ -418,7 +382,8 @@ public class TextPane extends JFrame implements ActionListener, ItemListener {
 			{
 				setBackground(list.getSelectionBackground());
 				setForeground(list.getSelectionForeground());
-			} else
+			} 
+			else
 			{
 				setBackground(list.getBackground());
 				setForeground(list.getForeground());
@@ -427,28 +392,42 @@ public class TextPane extends JFrame implements ActionListener, ItemListener {
 			String fontFamily = (String) value;
 			this.setText(fontFamily);
 
-			// The following line is the 'clincher'. This will cause
-			// the font family name to be rendered in the named font.
-
 			this.setFont(new Font(fontFamily, Font.PLAIN, 14));
 
 			return this;
 		}
 	}
 	
-/*	public static void main(String[] args)
+	/********public methods *********/
+	public String getMessage()
 	{
-		// use look and feel for my system (Win32)
-		try
-		{
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e)
-		{
-		}
-
-		TextPane frame = new TextPane();
-	}*/
+		return entry.getText();
+	}
 	
+	public Color getcolor()
+	{
+		return c;
+	}
 	
-
+	public String getfont()
+	{
+		return (String) fontCombo.getSelectedItem();
+	}
+	
+	public int getsize()
+	{
+		return Integer.parseInt((String) sizeCombo.getSelectedItem());
+	}
+	
+	public int getstyle()
+	{
+		if(italicCheckBox.isSelected() && !boldCheckBox.isSelected())
+			return Font.ITALIC;
+		else if(boldCheckBox.isSelected() && !italicCheckBox.isSelected())
+			return Font.BOLD;
+		else if(italicCheckBox.isSelected() && boldCheckBox.isSelected())
+			return Font.ITALIC + Font.BOLD;
+		else
+			return Font.PLAIN;
+	}
 }

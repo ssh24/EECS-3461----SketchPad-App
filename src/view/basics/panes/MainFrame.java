@@ -4,6 +4,8 @@ package view.basics.panes;
 import helper.extras.FileOperations;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -16,23 +18,34 @@ import view.basics.menu.MenuBar;
 import view.basics.toolbars.*;
 import controller.primary.MainControl;
 
-public class MainFrame extends JFrame {
-	
+/********The MainFrame class *******/
+public class MainFrame extends JFrame
+{
+	 /********Variables *********/
+	private static final long serialVersionUID = 1L;
 	public static final String company = " - SketchPad";
+	public static ToolBar pblic_tb;
+	public static MenuBar mb;
+	public static ZoomToolBar zoom_tb;
 	
-    public MainFrame(String title) {
-        
-    	// set menu bar
-    	this.setJMenuBar(new MenuBar(this));
+	
+	 /********public constructor *********/
+    public MainFrame(String title)
+    {
+    	mb = new MenuBar(this);
+    	// sets the menu bar
+    	this.setJMenuBar(mb);
     	
-    	//  save drawing window listener
-        addWindowListener(new WindowAdapter() {
+    	// adds Listener
+        addWindowListener(new WindowAdapter() 
+        {
         	
             @Override
             public void windowClosing(WindowEvent e)
             {
                 int n = FileOperations.saveDrawing(true, false);
-                if (n == JOptionPane.YES_OPTION || n == JOptionPane.NO_OPTION) {
+                if (n == JOptionPane.YES_OPTION || n == JOptionPane.NO_OPTION)
+                {
                     System.exit(0);
                 }
             }
@@ -41,23 +54,27 @@ public class MainFrame extends JFrame {
         
         KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         
-        manager.addKeyEventDispatcher(new KeyEventDispatcher() {
+        manager.addKeyEventDispatcher(new KeyEventDispatcher() 
+        {
             @Override 
             public boolean dispatchKeyEvent(KeyEvent e) 
             {
                 switch (e.getKeyCode()) 
                 {
                     case KeyEvent.VK_ESCAPE:
-                        if (MainControl.preview != null) {
+                        if (MainControl.preview != null)
+                        {
                             MainControl.preview = null;
                         }
-                        if (MainControl.selected != null) {
+                        if (MainControl.selected != null) 
+                        {
                             MainControl.selected = null;
                         }
                         MainControl.drawingArea.repaint();
                         break;
                     case KeyEvent.VK_DELETE:
-                        if (MainControl.mode == MainControl.Mode.SELECT && MainControl.selected != null) {
+                        if (MainControl.mode == MainControl.Mode.SELECT && MainControl.selected != null) 
+                        {
                             MainControl.drawings.remove(MainControl.selected);
                             MainControl.selected = null;
                         }
@@ -83,14 +100,16 @@ public class MainFrame extends JFrame {
                 return false;
             }
         });
-        getContentPane().add(new ToolBar(this), BorderLayout.NORTH);
+        //getContentPane().add(new ToolBar(this), BorderLayout.NORTH);
+        pblic_tb = new ToolBar(this);
+        zoom_tb = new ZoomToolBar();
+        getContentPane().add(pblic_tb, BorderLayout.NORTH);
         getContentPane().add(new DrawingViewport(), BorderLayout.CENTER);
-        getContentPane().add(new ZoomToolBar(), BorderLayout.SOUTH);
+        getContentPane().add(zoom_tb, BorderLayout.SOUTH);
         
         
         
-		GraphicsEnvironment ge = GraphicsEnvironment
-				.getLocalGraphicsEnvironment();
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		setBounds(ge.getMaximumWindowBounds());
 		
 		setTitle(title + company);
@@ -99,49 +118,67 @@ public class MainFrame extends JFrame {
 		
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         
+/*		setUndecorated(true);
+		getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+		
+		mb.setVisible(false);
+		pblic_tb.setVisible(false);
+		zoom_tb.setVisible(false);*/
+        
+       /* MenuBar.fullscreen.addActionListener(new ActionListener()
+        {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setUndecorated(true);
+				getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+				
+				mb.setVisible(false);
+				pblic_tb.setVisible(false);
+				zoom_tb.setVisible(false);
+			}
+        	
+        });*/
+        
         setVisible(true);
     }
   
 
-    /**
-     * This class implements a viewpoint for the
-     * drawing area. Allows the user to pan, scroll
-     * and zoom in or out of the drawing.
-     */
-    private static class DrawingViewport extends JScrollPane implements MouseWheelListener {
-        private DrawingArea drawingArea = MainControl.drawingArea;
-        /**
-         * Creates a <code>JScrollPane</code> that displays the
-         * contents of the specified
-         * component, where both horizontal and vertical scrollbars appear
-         * whenever the component's contents are larger than the view.
-         *
-         * @see #setViewportView
-         * @param pane the component to display in the scrollpane's viewport
-         */
-        public DrawingViewport() {
+    // private class to scroll the paint panel
+    private static class DrawingViewport extends JScrollPane implements MouseWheelListener 
+    {
+		private static final long serialVersionUID = 1L;
+		private DrawingArea drawingArea = MainControl.drawingArea;
+   
+		// Viewport for the paint panel
+        public DrawingViewport() 
+        {
             Dimension d = drawingArea.getPreferredSize();
             drawingArea.setBackground(Color.WHITE);
             setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
             getVerticalScrollBar().setUnitIncrement(25);
             getHorizontalScrollBar().setUnitIncrement(25);
-                JPanel inner = new JPanel();
-                inner.setLayout(new GridBagLayout());
-                inner.setPreferredSize(new Dimension(d.width + 50, d.height + 50));
-                inner.add(drawingArea);
+            JPanel inner = new JPanel();
+            inner.setLayout(new GridBagLayout());
+            inner.setPreferredSize(new Dimension(d.width + 50, d.height + 50));
+            inner.add(drawingArea);
             setViewportView(inner);
+            // adds Listener
             addMouseWheelListener(this);
         }
         @Override
-        public void mouseWheelMoved(MouseWheelEvent e) {
+        public void mouseWheelMoved(MouseWheelEvent e) 
+        {
             JSlider zslider = MainControl.zoomSlider;
-            if (e.getPreciseWheelRotation() > 0) {
+            if (e.getPreciseWheelRotation() > 0) 
+            {
                 zslider.setValue(zslider.getValue() - 1);
-            } else if (e.getPreciseWheelRotation() < 0) {
+            } 
+            else if (e.getPreciseWheelRotation() < 0) 
+            {
                 zslider.setValue(zslider.getValue() + 1);
             }
         }
-    } // DrawingViewport
-
-} // AppWindow
+    } 
+} 

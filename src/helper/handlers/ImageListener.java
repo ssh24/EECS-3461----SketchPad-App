@@ -8,14 +8,24 @@ import java.awt.geom.Rectangle2D;
 import controller.primary.MainControl;
 import controller.secondary.drawings.ImageDrawing;
 
-
-public class ImageListener extends MouseAdapter {
+/********The ImageListener class********/
+public class ImageListener extends MouseAdapter 
+{
+	 /********private variables *********/
     private double startx;
     private double starty;
     private Component comp;
     
+    public ImageListener(Component comp) 
+    {
+        this.comp = comp;
+    }
+    
+    
+    // implements MouseAdapter methods
     @Override
-    public void mousePressed(MouseEvent e) {
+    public void mousePressed(MouseEvent e) 
+    {
         startx = e.getX();
         starty = e.getY();
         ImageDrawing image = new ImageDrawing(MainControl.imagePath, startx, starty);
@@ -24,7 +34,8 @@ public class ImageListener extends MouseAdapter {
     }
 
     @Override
-    public void mouseDragged(MouseEvent e) {
+    public void mouseDragged(MouseEvent e) 
+    {
         double endx = e.getX();
         double endy = e.getY();
         double w = endx - startx; if (w == 0) {w = 0.1f;}
@@ -35,13 +46,12 @@ public class ImageListener extends MouseAdapter {
     }
 
     @Override
-    public void mouseReleased(MouseEvent e) {
+    public void mouseReleased(MouseEvent e) 
+    {
         MainControl.drawings.add(MainControl.preview);
         MainControl.preview = null;
         comp.repaint();
     }
 
-    public ImageListener(Component comp) {
-        this.comp = comp;
-    }
+
 }

@@ -2,74 +2,57 @@ package view.basics.toolbars;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 import javax.swing.JToolBar;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import controller.primary.MainControl;
 
-
-public class ZoomToolBar extends JToolBar {
-	
-	/**
-	 * 
-	 */
+/********The ZoomToolBar class *******/
+public class ZoomToolBar extends JToolBar 
+{
+	/********private variables *********/
 	private static final long serialVersionUID = 1L;
-	private JButton zoomIn;
-	private JButton zoomOut;
 	private JSlider zoomSlider;
-	
 	private final Color BACKGROUND = new Color(230, 230, 230);
 
+	
+	 /********public constructor *********/
 	public ZoomToolBar()
 	{
 		setLayout(new FlowLayout(FlowLayout.CENTER));
 		init_zoom();
 		setBackground(BACKGROUND);
+		setOpaque(true);
 		
 		this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		this.setFloatable(false);
 		this.setRollover(true);
 	}
 	
-	private static void showLabel(JSlider slider, Map<Integer, Integer> values) {
+	/********private method that shows the slider label for the zoom ********/
+	private static void showLabel(JSlider slider, Map<Integer, Integer> values)
+	{
 
 		Hashtable<Integer, JLabel> label = new Hashtable<Integer, JLabel>();
-		JLabel jLabel = new JLabel(values.get(slider.getValue()).toString()
-				+ "%");
+		JLabel jLabel = new JLabel(values.get(slider.getValue()).toString() + "%");
 		label.put(slider.getValue(), jLabel);
 		slider.setLabelTable(label);
 		slider.setPaintLabels(true);
 	}
 	
-	private void init_zoom() {
+	/********private method that creates the slider for the zoom ********/
+	private void init_zoom() 
+	{
 		
 		JLabel zoom = new JLabel("<html><font size = 4><b>Zoom level - </b></html>");
-		
-		/*zoomIn = new JButton(new ImageIcon(
-				"images/main-tool-bar-images/zoom_in.png"));
-		zoomIn.setBackground(Color.WHITE);
-
-		MainControl.zoomIn = zoomIn;
-
-		zoomOut = new JButton(new ImageIcon(
-				"images/main-tool-bar-images/zoom_out.png"));
-		zoomOut.setBackground(Color.WHITE);
-
-		MainControl.zoomOut = zoomOut;*/
 
 		zoomSlider = new JSlider(JSlider.HORIZONTAL, 0, 6, 3);
 		zoomSlider.setBackground(BACKGROUND);
@@ -87,36 +70,20 @@ public class ZoomToolBar extends JToolBar {
 		zoomSlider.setMajorTickSpacing(1);
 		zoomSlider.setPaintTicks(true);
 		zoomSlider.setSnapToTicks(true);
-
-		zoomSlider.addChangeListener(new ChangeListener() {
+		// adds Listener
+		zoomSlider.addChangeListener(new ChangeListener()
+		{
 			@Override
-			public void stateChanged(ChangeEvent arg0) {
+			public void stateChanged(ChangeEvent arg0)
+			{
 				showLabel(zoomSlider, zoomValues);
 				MainControl.zoom = (double) zoomValues.get(zoomSlider.getValue()) / 100;
 				MainControl.drawingArea.zoom();
 			}
 		});
 		showLabel(zoomSlider, zoomValues);
-/*
-		zoomIn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (zoomSlider.getValue() < zoomSlider.getMaximum()) {
-					zoomSlider.setValue(zoomSlider.getValue() + 1);
-				}
-			}
-		});
-		zoomOut.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (zoomSlider.getValue() > zoomSlider.getMinimum()) {
-					zoomSlider.setValue(zoomSlider.getValue() - 1);
-				}
-			}
-		});*/
 
 		add(zoom);
 		add(zoomSlider);
 	}
-	
 }
